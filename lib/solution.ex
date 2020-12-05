@@ -17,6 +17,13 @@ defmodule Solution do
     do_try("two", module, &module.solve2/1, module.test_result2())
   end
 
+  defp do_try(part, module, solver, :no_test) do
+    IO.puts """
+    #{IO.ANSI.yellow()}Running part #{part}...#{IO.ANSI.reset()}
+    Skipping test...
+    Solution: #{inspect(solver.(real_input(module)))}
+    """
+  end
   defp do_try(part, module, solver, test_result) do
     test_input = test_input(module)
 
