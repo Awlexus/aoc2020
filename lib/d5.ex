@@ -6,21 +6,17 @@ defmodule D5 do
   def test_result, do: 820
   def test_result2, do: :no_test
 
-  def solve(input) do
-    input
+  def parse_input(raw_input) do
+    raw_input
     |> String.split()
     |> Stream.map(&parse_boarding_pass/1)
     |> Stream.map(&to_id/1)
-    |> Enum.max()
   end
 
+  def solve(input), do: Enum.max(input)
+
   def solve2(input) do
-    ids =
-      input
-      |> String.split()
-      |> Stream.map(&parse_boarding_pass/1)
-      |> Stream.map(&to_id/1)
-      |> Enum.to_list()
+    ids = Enum.to_list(input)
 
     {min, max} = Enum.min_max(ids)
     Enum.to_list(min..max) -- ids
