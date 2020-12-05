@@ -1,6 +1,6 @@
 defmodule Solution do
   @type result :: any()
-  @type input :: String.t()
+  @type input :: any()
   @type test_result :: any()
 
   @callback solve(input()) :: result()
@@ -8,6 +8,8 @@ defmodule Solution do
 
   @callback test_result() :: test_result()
   @callback test_result2() :: test_result()
+
+  @callback parse_input(String.t()) :: input()
 
   def try1(module) do
     do_try("one", module, &module.solve/1, module.test_result())
@@ -18,12 +20,19 @@ defmodule Solution do
   end
 
   defp do_try(part, module, solver, :no_test) do
-    IO.puts """
+    solution =
+      module
+      |> real_input()
+      |> module.parse_input()
+      |> solver.()
+
+    IO.puts("""
     #{IO.ANSI.yellow()}Running part #{part}...#{IO.ANSI.reset()}
     Skipping test...
-    Solution: #{inspect(solver.(real_input(module)))}
-    """
+    Solution: #{inspect(solution)}
+    """)
   end
+
   defp do_try(part, module, solver, test_result) do
     test_input = test_input(module)
 
@@ -34,13 +43,17 @@ defmodule Solution do
     #{test_input}
     """)
 
-    case solver.(test_input) do
+    case solver.(module.parse_input(test_input)) do
       ^test_result ->
-        real_input = real_input(module)
+        solution =
+          module
+          |> real_input()
+          |> module.parse_input()
+          |> solver.()
 
         IO.puts("""
         #{IO.ANSI.green()}Test was successful.#{IO.ANSI.reset()}
-        Solution: #{inspect(solver.(real_input))}
+        Solution: #{inspect(solution)}
         """)
 
       other ->
