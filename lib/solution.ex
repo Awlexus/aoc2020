@@ -9,17 +9,20 @@ defmodule Solution do
   @callback test_result() :: test_result()
   @callback test_result2() :: test_result()
 
+  @callback test_input() :: input()
+  @callback test_input2() :: input() | nil
+
   @callback parse_input(String.t()) :: input()
 
   def try1(module) do
-    do_try("one", module, &module.solve/1, module.test_result())
+    do_try("one", module, &module.solve/1, module.test_result(), module.test_input())
   end
 
   def try2(module) do
-    do_try("two", module, &module.solve2/1, module.test_result2())
+    do_try("two", module, &module.solve2/1, module.test_result2(), module.test_input2() || module.test_input())
   end
 
-  defp do_try(part, module, solver, :no_test) do
+  defp do_try(part, module, solver, :no_test, _) do
     solution =
       module
       |> real_input()
@@ -33,8 +36,8 @@ defmodule Solution do
     """)
   end
 
-  defp do_try(part, module, solver, test_result) do
-    test_input = test_input(module)
+  defp do_try(part, module, solver, test_result, test_input) do
+    test_input = test_input || test_input(module)
 
     IO.puts("""
     #{IO.ANSI.yellow()}Running part #{part}...#{IO.ANSI.reset()}
